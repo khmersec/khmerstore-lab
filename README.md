@@ -184,7 +184,7 @@ curl http://TARGET/api/logs
 
 ```bash
 # Clone repository
-git clone https://github.com/YOUR_USERNAME/khmer-store-lab.git
+git clone https://github.com/khmersec/khmer-store-lab.git
 cd khmer-store-lab
 
 # Install dependencies
