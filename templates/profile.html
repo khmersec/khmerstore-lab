@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - Khmer Store</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <a href="/" class="logo">
+                <div class="logo-icon">KS</div>
+                <div class="logo-text">Khmer <span>Store</span></div>
+            </a>
+            <nav class="nav">
+                <a href="/" class="nav-link">Home</a>
+                <a href="/products" class="nav-link">Products</a>
+                <a href="/account" class="nav-link">My Account</a>
+                <a href="/profile" class="nav-link active">Profile</a>
+                {% if user and user.role == 'admin' %}
+                <a href="/admin" class="nav-btn">Admin</a>
+                {% endif %}
+                <button onclick="logout()" class="nav-btn nav-btn-outline">Logout</button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="profile-layout">
+            <aside class="sidebar">
+                <div class="profile-avatar">{{ user.name[0] if user.name else user.username[0] }}</div>
+                <div class="profile-name">{{ user.name or user.username }}</div>
+                <div class="profile-email">{{ user.email }}</div>
+                <ul class="sidebar-menu" style="margin-top: 25px;">
+                    <li><a href="/profile" class="active">Profile</a></li>
+                    <li><a href="/account">My Account</a></li>
+                    <li><a href="/products">Products</a></li>
+                    {% if user.role == 'admin' %}
+                    <li><a href="/admin">Admin Dashboard</a></li>
+                    {% endif %}
+                </ul>
+            </aside>
+
+            <div class="main-content">
+                <section class="section">
+                    <div class="section-header">
+                        <h2 class="section-title">Profile Settings</h2>
+                    </div>
+
+                    <div style="display: grid; gap: 20px;">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                            <div>
+                                <div class="form-label">Username</div>
+                                <div style="padding: 12px; background: var(--bg-light); border-radius: 8px; color: white;">{{ user.username }}</div>
+                            </div>
+                            <div>
+                                <div class="form-label">Email</div>
+                                <div style="padding: 12px; background: var(--bg-light); border-radius: 8px; color: white;">{{ user.email }}</div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="form-label">Role</div>
+                            <span class="status-badge {{ 'status-admin' if user.role == 'admin' else 'status-user' }}">{{ user.role }}</span>
+                        </div>
+                        <div>
+                            <div class="form-label">Verified</div>
+                            <span class="status-badge {{ 'status-verified' if user.verified else 'status-unverified' }}">
+                                {{ 'Verified' if user.verified else 'Not Verified' }}
+                            </span>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="section">
+                    <div class="section-header">
+                        <h2 class="section-title">Update Name</h2>
+                    </div>
+
+                    <div style="display: grid; gap: 20px;">
+                        <form id="nameForm">
+                            <div class="form-group">
+                                <label class="form-label">Display Name</label>
+                                <input type="text" id="display-name" class="form-input" value="{{ user.name }}" placeholder="Enter your name">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Update Name</button>
+                        </form>
+                        <div id="name-response" class="response-box"></div>
+                    </div>
+                </section>
+
+                <section class="section">
+                    <div class="section-header">
+                        <h2 class="section-title">Update Account</h2>
+                    </div>
+
+                    <div style="display: grid; gap: 20px;">
+                        <form id="accountForm">
+                            <div class="form-group">
+                                <label class="form-label">Name</label>
+                                <input type="text" id="acc-name" class="form-input" value="{{ user.name }}">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Email</label>
+                                <input type="email" id="acc-email" class="form-input" value="{{ user.email }}">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Update Account</button>
+                        </form>
+                        <div id="acc-response" class="response-box"></div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        document.getElementById('nameForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const box = document.getElementById('name-response');
+            box.style.display = 'block';
+            box.textContent = 'Sending request...';
+            try {
+                const res = await fetch('/api/profile/name', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ name: document.getElementById('display-name').value })
+                });
+                box.textContent = JSON.stringify(await res.json(), null, 2);
+            } catch (err) { box.textContent = 'Error: ' + err.message; }
+        });
+
+        document.getElementById('accountForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const box = document.getElementById('acc-response');
+            box.style.display = 'block';
+            box.textContent = 'Sending request...';
+            try {
+                const res = await fetch('/api/account/update', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        name: document.getElementById('acc-name').value,
+                        email: document.getElementById('acc-email').value
+                    })
+                });
+                box.textContent = JSON.stringify(await res.json(), null, 2);
+            } catch (err) { box.textContent = 'Error: ' + err.message; }
+        });
+
+        async function logout() {
+            await fetch('/api/logout', { method: 'POST' });
+            window.location.href = '/login';
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Products - Khmer Store</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <a href="/" class="logo">
+                <div class="logo-icon">KS</div>
+                <div class="logo-text">Khmer <span>Store</span></div>
+            </a>
+            <nav class="nav">
+                <a href="/" class="nav-link">Home</a>
+                <a href="/products" class="nav-link active">Products</a>
+                <a href="/account" class="nav-link">My Account</a>
+                <a href="/login" class="nav-btn">Login</a>
+                <a href="/register" class="nav-btn nav-btn-outline">Register</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="section">
+            <div class="section-header">
+                <h2 class="section-title">All Products</h2>
+            </div>
+            <div class="product-grid">
+                {% for product in products %}
+                <div class="card">
+                    <div class="card-image">
+                        {% if 'Mouse' in product.name %}🖱️
+                        {% elif 'Keyboard' in product.name %}⌨️
+                        {% elif 'Hub' in product.name %}🔌
+                        {% elif 'Stand' in product.name %}💻
+                        {% elif 'Book' in product.name %}📖
+                        {% elif 'Webcam' in product.name %}📷
+                        {% elif 'Headphones' in product.name %}🎧
+                        {% elif 'Light' in product.name %}💡
+                        {% elif 'Mat' in product.name %}🖱️
+                        {% elif 'Power' in product.name %}🔋
+                        {% elif 'HDMI' in product.name %}🔗
+                        {% elif 'Flash' in product.name %}💾
+                        {% elif 'Charger' in product.name %}⚡
+                        {% elif 'Protector' in product.name %}🛡️
+                        {% elif 'Cable' in product.name %}🔌
+                        {% elif 'Sleeve' in product.name %}💼
+                        {% elif 'Speaker' in product.name %}🔊
+                        {% elif 'Wrist' in product.name %}🖐️
+                        {% else %}📦
+                        {% endif %}
+                    </div>
+                    <div class="card-body">
+                        <h3 class="card-title">{{ product.name }}</h3>
+                        <p class="card-desc">{{ product.description }}</p>
+                        <div class="card-price">${{ "%.2f"|format(product.price) }} <span>USD</span></div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-text">2026 Khmer Store. All rights reserved.</div>
+            <div class="footer-links">
+                <a href="/">Home</a>
+                <a href="/health">Health</a>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

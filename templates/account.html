@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Account - Khmer Store</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <a href="/" class="logo">
+                <div class="logo-icon">KS</div>
+                <div class="logo-text">Khmer <span>Store</span></div>
+            </a>
+            <nav class="nav">
+                <a href="/" class="nav-link">Home</a>
+                <a href="/products" class="nav-link">Products</a>
+                <a href="/account" class="nav-link active">My Account</a>
+                <a href="/profile" class="nav-link">Profile</a>
+                {% if user and user.role == 'admin' %}
+                <a href="/admin" class="nav-btn">Admin</a>
+                {% endif %}
+                <button onclick="logout()" class="nav-btn nav-btn-outline">Logout</button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="profile-layout">
+            <aside class="sidebar">
+                <div class="profile-avatar">{{ user.name[0] if user.name else user.username[0] }}</div>
+                <div class="profile-name">{{ user.name or user.username }}</div>
+                <div class="profile-email">{{ user.email }}</div>
+                <ul class="sidebar-menu" style="margin-top: 25px;">
+                    <li><a href="/profile">👤 Profile</a></li>
+                    <li><a href="/account" class="active">📦 My Account</a></li>
+                    <li><a href="/products">🛍️ Products</a></li>
+                    {% if user.role == 'admin' %}
+                    <li><a href="/admin">⚙️ Admin Dashboard</a></li>
+                    {% endif %}
+                </ul>
+            </aside>
+
+            <div class="main-content">
+                <section class="section">
+                    <div class="section-header">
+                        <h2 class="section-title">My Orders</h2>
+                    </div>
+
+                    {% if orders %}
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Product</th>
+                                    <th>Quantity</th>
+                                    <th>Total</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for order in orders %}
+                                <tr>
+                                    <td>#{{ order.id }}</td>
+                                    <td>{{ order.product_name }}</td>
+                                    <td>{{ order.quantity }}</td>
+                                    <td>${{ "%.2f"|format(order.total) }}</td>
+                                    <td>
+                                        <span class="status-badge status-verified">{{ order.status }}</span>
+                                    </td>
+                                    <td>{{ order.created_at }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p style="color: var(--text-muted); text-align: center; padding: 40px 0;">
+                        No orders yet. <a href="/products" style="color: var(--primary-light);">Browse products</a>
+                    </p>
+                    {% endif %}
+                </section>
+
+                <section class="section">
+                    <div class="section-header">
+                        <h2 class="section-title">Account Info</h2>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <div>
+                            <div class="form-label">Username</div>
+                            <div style="padding: 12px; background: var(--bg-light); border-radius: 8px; color: white;">{{ user.username }}</div>
+                        </div>
+                        <div>
+                            <div class="form-label">Email</div>
+                            <div style="padding: 12px; background: var(--bg-light); border-radius: 8px; color: white;">{{ user.email }}</div>
+                        </div>
+                        <div>
+                            <div class="form-label">Name</div>
+                            <div style="padding: 12px; background: var(--bg-light); border-radius: 8px; color: white;">{{ user.name or 'Not set' }}</div>
+                        </div>
+                        <div>
+                            <div class="form-label">Role</div>
+                            <span class="status-badge {{ 'status-admin' if user.role == 'admin' else 'status-user' }}">{{ user.role }}</span>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        async function logout() {
+            await fetch('/api/logout', { method: 'POST' });
+            window.location.href = '/login';
+        }
+    </script>
+</body>
+</html>

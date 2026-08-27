@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Khmer Store</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <a href="/" class="logo">
+                <div class="logo-icon">KS</div>
+                <div class="logo-text">Khmer <span>Store</span></div>
+                <span class="lab-badge">ADMIN</span>
+            </a>
+            <nav class="nav">
+                <a href="/" class="nav-link">Home</a>
+                <a href="/products" class="nav-link">Products</a>
+                <a href="/account" class="nav-link">My Account</a>
+                <a href="/admin" class="nav-link active">Admin</a>
+                <button onclick="logout()" class="nav-btn nav-btn-outline">Logout</button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="section">
+            <div class="section-header">
+                <h2 class="section-title">Khmer Store Admin Dashboard</h2>
+            </div>
+
+            <div style="margin-bottom: 20px; display: flex; gap: 20px; align-items: center;">
+                <div>
+                    <span style="color: var(--text-muted);">Logged in as:</span>
+                    <strong style="color: white;">{{ user.username }}</strong>
+                </div>
+                <div>
+                    <span style="color: var(--text-muted);">Role:</span>
+                    <span class="status-badge status-admin">{{ user.role }}</span>
+                </div>
+            </div>
+        </section>
+
+        <div class="admin-stats">
+            <div class="stat-card">
+                <div class="stat-icon users">👥</div>
+                <div class="stat-value">{{ stats.users }}</div>
+                <div class="stat-label">Users</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon products">📦</div>
+                <div class="stat-value">{{ stats.products }}</div>
+                <div class="stat-label">Products</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon orders">🛒</div>
+                <div class="stat-value">{{ stats.orders }}</div>
+                <div class="stat-label">Orders</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon revenue">💰</div>
+                <div class="stat-value">${{ "%.0f"|format(stats.revenue) }}</div>
+                <div class="stat-label">Revenue</div>
+            </div>
+        </div>
+
+        <section class="section">
+            <div class="section-header">
+                <h2 class="section-title">Users</h2>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Username</th>
+                            <th>Email</th>
+                            <th>Name</th>
+                            <th>Role</th>
+                            <th>Verified</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for u in users %}
+                        <tr>
+                            <td>{{ u.id }}</td>
+                            <td>{{ u.username }}</td>
+                            <td>{{ u.email }}</td>
+                            <td>{{ u.name }}</td>
+                            <td>
+                                <span class="status-badge {{ 'status-admin' if u.role == 'admin' else 'status-user' }}">{{ u.role }}</span>
+                            </td>
+                            <td>
+                                <span class="status-badge {{ 'status-verified' if u.verified else 'status-unverified' }}">
+                                    {{ 'Yes' if u.verified else 'No' }}
+                                </span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="section-header">
+                <h2 class="section-title">Navigation</h2>
+            </div>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <a href="/admin" class="btn btn-primary">Dashboard</a>
+                <a href="/products" class="btn btn-secondary">Products</a>
+                <a href="/account" class="btn btn-secondary">Orders</a>
+                <a href="/account" class="btn btn-secondary">Users</a>
+                <a href="/profile" class="btn btn-secondary">Settings</a>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        async function logout() {
+            await fetch('/api/logout', { method: 'POST' });
+            window.location.href = '/login';
+        }
+    </script>
+</body>
+</html>
